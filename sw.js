@@ -1,11 +1,11 @@
 const CACHE_NAME = 'pigeon-clock-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/pigeon-clock.js',
-  '/manifest.json',
-  '/Cuckoo_Clock01-03(Denoise-Long).mp3'
+  './',
+  './index.html',
+  './style.css',
+  './pigeon-clock.js',
+  './manifest.json',
+  './Cuckoo_Clock01-03(Denoise-Long).mp3'
 ];
 
 // Service Worker のインストール
@@ -70,8 +70,8 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'HOURLY_NOTIFICATION') {
     self.registration.showNotification('鳩時計', {
       body: '時報です！鳩が鳴きました 🕊',
-      icon: '/icon-192.png',
-      badge: '/icon-72.png',
+      icon: './icon-192.png',
+      badge: './icon-192.png',
       tag: 'hourly-pigeon',
       requireInteraction: false,
       silent: false
