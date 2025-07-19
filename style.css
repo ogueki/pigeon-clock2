@@ -1,0 +1,159 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.clock-body {
+    width: 300px;
+    height: 400px;
+    background-color: #a44900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    position: relative;
+}
+
+.pigeon-window {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 36px;
+    color: white;
+    background-color: black;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pigeon-character {
+    font-size: 36px;
+    color: white;
+    display: none;
+    margin: 0;
+    animation: none;
+}
+
+.pigeon-character-appear {
+    font-size: 36px;
+    color: white;
+    margin: 0;
+    display: block;
+    animation: pigeonAppear 0.5s ease-in-out;
+}
+
+@keyframes pigeonAppear {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.clock {
+    width: 200px;
+    height: 200px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.time {
+    font-size: 36px;
+    color: #333;
+    font-family: 'Courier New', monospace;
+}
+
+.cry-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cry-button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cry-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.install-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.install-button:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+    .clock-body {
+        width: 280px;
+        height: 380px;
+    }
+    
+    .clock {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .time {
+        font-size: 28px;
+    }
+}
+
+/* PWA用のスプラッシュスクリーン対応 */
+@media (display-mode: standalone) {
+    body {
+        background-color: #a44900;
+    }
+    
+    .clock-body {
+        border: 2px solid #333;
+    }
+}
