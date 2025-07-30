@@ -26,10 +26,42 @@
         <div class="pigeon-window" id="pigeon">
             <p class="pigeon-character" id="pigeon-character">🕊</p>
         </div>
+        
         <div class="clock">
             <div class="time" id="digital-clock"></div>
         </div>
+        
         <button class='cry-button' onclick="playPigeonCry(),changePigeonColor()">はと</button>
+        
+        <!-- 設定パネル -->
+        <div class="settings-panel">
+            <div class="setting-item">
+                <span>時報通知</span>
+                <label class="switch">
+                    <input type="checkbox" id="hourly-notification-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <span>タイマー設定</span>
+                <div class="timer-input">
+                    <input type="number" id="timer-hours" min="0" max="23" value="0" placeholder="時">
+                    <span>:</span>
+                    <input type="number" id="timer-minutes" min="0" max="59" value="1" placeholder="分">
+                    <button class="button" onclick="setTimer()">設定</button>
+                </div>
+            </div>
+            
+            <div class="timer-display" id="timer-display" style="display: none;">
+                タイマー: <span id="timer-countdown"></span>
+                <button class="button" onclick="cancelTimer()">キャンセル</button>
+            </div>
+            
+            <div class="notification-status" id="notification-status">
+                通知許可を確認中...
+            </div>
+        </div>
         
         <!-- PWA インストールボタン -->
         <button id="install-button" class="install-button" style="display: none;">
@@ -78,7 +110,9 @@
 
         // 通知許可の要求
         if ('Notification' in window) {
-            Notification.requestPermission();
+            Notification.requestPermission().then(permission => {
+                updateNotificationStatus(permission);
+            });
         }
     </script>
 </body>

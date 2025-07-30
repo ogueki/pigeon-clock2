@@ -1,11 +1,12 @@
-const CACHE_NAME = 'pigeon-clock-v1';
+const CACHE_NAME = 'pigeon-clock-v2';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './pigeon-clock.js',
   './manifest.json',
-  './Cuckoo_Clock01-03(Denoise-Long).mp3'
+  './Cuckoo_Clock01-03(Denoise-Long).mp3',
+  './icon-192.png'
 ];
 
 // Service Worker のインストール
@@ -14,7 +15,20 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('キャッシュを開いています');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache.filter(url => url !== './Cuckoo_Clock01-03(Denoise-Long).mp3' && url !== './icon-192.png'));
+      })
+      .catch((error) => {
+        console.log('キャッシュエラー:', error);
+        // 重要なファイルのみキャッシュ
+        return caches.open(CACHE_NAME).then((cache) => {
+          return cache.addAll([
+            './',
+            './index.html',
+            './style.css',
+            './pigeon-clock.js',
+            './manifest.json'
+          ]);
+        });
       })
   );
 });
@@ -65,16 +79,63 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// バックグラウンドでの時報通知（オプション）
+// プッシュ通知の処理
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'HOURLY_NOTIFICATION') {
-    self.registration.showNotification('鳩時計', {
-      body: '時報です！鳩が鳴きました 🕊',
+    self.registration.showNotification('🕊 鳩時計 - 時報', {
+      body: '時報です！鳩が鳴きました',
       icon: './icon-192.png',
       badge: './icon-192.png',
       tag: 'hourly-pigeon',
       requireInteraction: false,
-      silent: false
+      silent: false,
+      vibrate: [200, 100, 200],
+      data: { type: 'hourly' }
     });
+  } else if (event.data && event.data.type === 'TIMER_NOTIFICATION') {
+    self.registration.showNotification('⏰ 鳩時計 - タイマー', {
+      body: 'タイマーが終了しました！',
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      tag: 'timer-pigeon',
+      requireInteraction: true,
+      silent: false,
+      vibrate: [300, 100, 300, 100, 300],
+      data: { type: 'timer' }
+    });
+  }
+});
+
+// 通知をクリックした時の処理
+self.addEventListener('notificationclick', (event) => {
+  console.log('通知がクリックされました:', event.notification.tag);
+  
+  event.notification.close();
+  
+  // アプリを開く
+  event.waitUntil(
+    clients.matchAll({ type: 'window' })
+      .then((clientList) => {
+        // 既に開いているタブがあれば、そこにフォーカス
+        for (const client of clientList) {
+          if (client.url === self.registration.scope && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // 開いているタブがなければ新しいタブを開く
+        if (clients.openWindow) {
+          return clients.openWindow('./');
+        }
+      })
+  );
+});
+
+// バックグラウンド同期（オプション）
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'background-sync') {
+    event.waitUntil(
+      // バックグラウンドでの処理をここに記述
+      console.log('バックグラウンド同期が実行されました')
+    );
   }
 });
