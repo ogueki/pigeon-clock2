@@ -75,45 +75,41 @@
 
     <script src="pigeon-clock.js"></script>
     <script>
-        // Service Worker の登録
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('Service Worker が登録されました:', registration);
-                    })
-                    .catch((error) => {
-                        console.log('Service Worker の登録に失敗しました:', error);
-                    });
-            });
-        }
-
-        // PWA インストール機能
-        let deferredPrompt;
-        const installButton = document.getElementById('install-button');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'block';
+    // Service Worker の登録
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((registration) => {
+                    console.log('Service Worker が登録されました:', registration);
+                })
+                .catch((error) => {
+                    console.log('Service Worker の登録に失敗しました:', error);
+                });
         });
+    }
 
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`PWA インストール結果: ${outcome}`);
-                deferredPrompt = null;
-                installButton.style.display = 'none';
-            }
-        });
+    // PWA インストール機能
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
 
-        // 通知許可の要求
-        if ('Notification' in window) {
-            Notification.requestPermission().then(permission => {
-                updateNotificationStatus(permission);
-            });
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`PWA インストール結果: ${outcome}`);
+            deferredPrompt = null;
+            installButton.style.display = 'none';
         }
-    </script>
+    });
+
+    // 通知許可の自動リクエストを削除
+    // ユーザーがボタンをクリックした時のみ許可をリクエストする
+</script>
 </body>
 </html>

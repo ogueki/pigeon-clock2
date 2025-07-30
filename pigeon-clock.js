@@ -98,11 +98,60 @@ function sendTimerNotification() {
     }
 }
 
+// 通知許可をリクエスト（ユーザー操作が必要）
+function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+        updateNotificationStatus('not-supported');
+        return;
+    }
+
+    // iOS PWAの場合の特別な処理
+    if (isIOSPWA()) {
+        // iOSのPWAでは通知がサポートされていないことを表示
+        updateNotificationStatus('ios-pwa-limitation');
+        return;
+    }
+
+    // 通知許可をリクエスト
+    Notification.requestPermission().then(permission => {
+        updateNotificationStatus(permission);
+        // 許可が得られた場合、設定を保存
+        if (permission === 'granted') {
+            localStorage.setItem('notification-requested', 'true');
+        }
+    });
+}
+
+// iOSのPWAかどうかを判定
+function isIOSPWA() {
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone === true;
+    return isIOS && isStandalone;
+}
+
 // 通知ステータスの更新
 function updateNotificationStatus(permission) {
     notificationPermission = permission || Notification.permission;
     const statusElement = document.getElementById('notification-status');
     if (!statusElement) return;
+    
+    // iOSの場合の特別な処理
+    if (permission === 'ios-pwa-limitation') {
+        statusElement.innerHTML = `
+            <div style="font-size: 12px; line-height: 1.4;">
+                ℹ️ iOS版PWAでは通知機能は利用できません<br>
+                <small>時報は音声のみで動作します</small>
+            </div>
+        `;
+        statusElement.style.color = '#666';
+        return;
+    }
+    
+    if (permission === 'not-supported') {
+        statusElement.textContent = '⚠️ このブラウザは通知をサポートしていません';
+        statusElement.style.color = '#ff9800';
+        return;
+    }
     
     switch (notificationPermission) {
         case 'granted':
@@ -110,11 +159,21 @@ function updateNotificationStatus(permission) {
             statusElement.style.color = '#4CAF50';
             break;
         case 'denied':
-            statusElement.textContent = '❌ 通知が拒否されています';
+            statusElement.innerHTML = `
+                <div style="font-size: 12px; line-height: 1.4;">
+                    ❌ 通知が拒否されています<br>
+                    <small>ブラウザの設定から通知を許可してください</small>
+                </div>
+            `;
             statusElement.style.color = '#f44336';
             break;
         default:
-            statusElement.textContent = '⚠️ 通知許可が必要です';
+            // 通知許可ボタンを表示
+            statusElement.innerHTML = `
+                <button onclick="requestNotificationPermission()" class="button" style="margin-top: 10px;">
+                    🔔 通知を許可する
+                </button>
+            `;
             statusElement.style.color = '#ff9800';
             break;
     }
@@ -240,7 +299,7 @@ window.addEventListener('offline', updateOnlineStatus);
 
 // 初期化処理
 window.addEventListener('load', () => {
-    // 通知許可状態を更新
+    // 通知許可状態を更新（自動リクエストはしない）
     updateNotificationStatus();
     
     // 設定を初期化
